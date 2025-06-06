@@ -12,7 +12,7 @@ app.use(cors());
 // OpenRouteService API KEY
 const ORS_API_KEY = '5b3ce3597851110001cf62482990c084e35f41e1b1cdafe113a39b59';
 
-// Endpoint : Address geocoding
+// Address geocoding
 app.post('/api/geocode-address', async (req, res) => {
     const { query } = req.body;
     if (!query) {
@@ -38,7 +38,7 @@ app.post('/api/geocode-address', async (req, res) => {
     }
 });
 
-// Endpoint : itinerary calculation with TSP optimization
+// Itinerary calculation with TSP optimization
 app.post('/api/calculate-route', async (req, res) => {
     const { baseAddress, followingAddresses, vehicle } = req.body;
 
