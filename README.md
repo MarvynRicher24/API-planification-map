@@ -1,78 +1,145 @@
-This is an API in REACT created thanks to my other project : application planification map.
-With this API, you can have :
-- automatic calculation of the fastest route,
-- automatic calculation of distance and travel time according to the type of vehicle chosen,
-- calculation of the ecological impact of the route according to the type of vehicle chosen.
-- export itinerary to Google Maps
-- GPX file
+# Itinerary API Service
 
-# Getting Started with Create React App
+This project is a standalone **Node.js and Express** API for route optimization and planning, originally derived from a React-based map planning application. It provides powerful routing functionalities via HTTP endpoints, without any frontend UI.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Key Features
 
-## Available Scripts
+* **Optimized Route Calculation**: Solve the Traveling Salesman Problem (TSP) to compute the fastest itinerary through multiple waypoints.
+* **Accurate Distance & Time**: Fetch route distance and travel time using OSRM and OpenRouteService APIs, tailored to the chosen vehicle type.
+* **Environmental Impact**: Calculate CO₂ emissions based on distance and vehicle-specific emission factors (g CO₂/km).
+* **Google Maps Export**: Generate a shareable Google Maps Directions URL for the optimized route.
+* **GPX Export**: Produce a GPX file of the optimized route for use in GPS devices and mapping software.
 
-In the project directory, you can run:
+## Table of Contents
 
-### `npm start`
+* [Prerequisites](#prerequisites)
+* [Installation](#installation)
+* [Configuration](#configuration)
+* [Available Endpoints](#available-endpoints)
+* [Usage Examples](#usage-examples)
+* [Scripts](#scripts)
+* [Contributing](#contributing)
+* [License](#license)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Prerequisites
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+* **Node.js** v14+
+* **npm** v6+
+* A valid **OpenRouteService (ORS) API key** (for precise travel time calculations)
+* Internet access for API calls to OSRM and OpenRouteService
 
-### `npm test`
+## Installation
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. Clone this repository:
 
-### `npm run build`
+   ```bash
+   git clone https://github.com/yourusername/itinerary-api.git
+   cd itinerary-api
+   ```
+2. Install dependencies:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+   ```bash
+   npm install
+   ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Configuration
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+1. Create a `.env` file in the project root:
 
-### `npm run eject`
+   ```ini
+   PORT=5000
+   ORS_API_KEY=your_openrouteservice_api_key_here
+   ```
+2. (Optional) Adjust the `PORT` as needed.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Available Endpoints
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 1. **Geocode Address**
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+**POST** `/api/geocode-address`
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+* **Body** (JSON):
 
-## Learn More
+  ```json
+  { "query": "1600 Amphitheatre Parkway, Mountain View, CA" }
+  ```
+* **Response** (200):
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+  ```json
+  {
+    "address": "1600 Amphitheatre Parkway, ...",
+    "lat": 37.4220,
+    "lon": -122.0841
+  }
+  ```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### 2. **Calculate Optimized Route**
 
-### Code Splitting
+**POST** `/api/calculate-route`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+* **Body** (JSON):
 
-### Analyzing the Bundle Size
+  ```json
+  {
+    "baseAddress": { "address": "Paris, France", "lat": 48.8566, "lon": 2.3522 },
+    "followingAddresses": [
+      { "address": "Lyon, France", "lat": 45.7640, "lon": 4.8357 },
+      { "address": "Toulouse, France", "lat": 43.6045, "lon": 1.4440 }
+    ],
+    "vehicle": "car"
+  }
+  ```
+* **Response** (200):
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+  ```json
+  {
+    "optimizedPoints": [ /* ordered list of addresses */ ],
+    "geometry": { /* GeoJSON LineString */ },
+    "totalDistance": "xxx.xx", // km
+    "totalTime": 123,          // minutes
+    "carbonFootprint": "yyy.yy" // grams CO₂
+  }
+  ```
 
-### Making a Progressive Web App
+### 3. **Export to Google Maps**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+**POST** `/api/export-googlemaps`
 
-### Advanced Configuration
+* **Same request body as `/calculate-route`**
+* **Response** (200):
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+  ```json
+  { "url": "https://www.google.com/maps/dir/?api=1&..." }
+  ```
 
-### Deployment
+### 4. **Export GPX File**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+**POST** `/api/export-gpx`
 
-### `npm run build` fails to minify
+* **Same request body as `/calculate-route`**
+* **Response** (200, `application/gpx+xml`): raw GPX XML content
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Usage Examples
+
+1. **Start the server**:
+
+   ```bash
+   npm run start
+   # or for development with auto-reload:
+   npm run dev
+   ```
+
+2. **Test with curl**:
+
+   ```bash
+   curl -X POST http://localhost:5000/api/calculate-route \
+     -H "Content-Type: application/json" \
+     -d '{ "baseAddress": { "address": "Paris, France", "lat": 48.8566, "lon": 2.3522 }, "followingAddresses": [{ "address": "Lyon, France", "lat": 45.7640, "lon": 4.8357 }], "vehicle": "car" }'
+   ```
+
+## Scripts
+
+| Command       | Description                           |
+| ------------- | ------------------------------------- |
+| `npm start`   | Run server in production mode         |
+| `npm run dev` | Run server with nodemon (auto-reload) |
