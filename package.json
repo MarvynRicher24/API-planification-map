@@ -1,14 +1,14 @@
 {
-  "name": "itinerary-app",
+  "name": "fasplaneco-api",
   "version": "0.1.0",
   "private": true,
+  "main": "src/index.js",
   "dependencies": {
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
-    "node-fetch": "^2.7.0",
-    "main": "src/index.js"
+    "node-fetch": "^2.7.0"
   },
   "scripts": {
     "test": "jest",
