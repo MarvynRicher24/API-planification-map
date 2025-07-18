@@ -1,3 +1,37 @@
+/**
+ * @swagger
+ * /api/geocode-address:
+ *   post:
+ *     summary: Geocode
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               query:
+ *                 type: string
+ *                 example: Eiffel Tower
+ *     responses:
+ *       200:
+ *         description: Geocode address
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 address:
+ *                   type: string
+ *                 lat:
+ *                   type: number
+ *                 lon:
+ *                   type: number
+ *       400:
+ *         description: Bad request
+ *       404:
+ *         description: Adress not find
+ */
 const express = require('express');
 const fetch = require('../utils/fetch');
 const router = express.Router();

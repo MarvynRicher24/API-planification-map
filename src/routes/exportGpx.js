@@ -1,3 +1,40 @@
+/**
+ * @swagger
+ * /api/export-gpx:
+ *   post:
+ *     summary: GPX File
+ *     tags:
+ *       - Export
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [baseAddress, followingAddresses]
+ *             properties:
+ *               baseAddress:
+ *                 $ref: '#/components/schemas/Point'
+ *               followingAddresses:
+ *                 type: array
+ *                 items:
+ *                   $ref: '#/components/schemas/Point'
+ *               vehicle:
+ *                 type: string
+ *                 enum: [car, electricCar, utility, electricUtility, bike, byFoot]
+ *     responses:
+ *       200:
+ *         description: GPX File
+ *         content:
+ *           application/gpx+xml:
+ *             schema:
+ *               type: string
+ *               format: xml
+ *       400:
+ *         description: Bad request
+ *       500:
+ *         description: Internal error
+ */
 const express = require('express');
 const { getDistanceMatrix } = require('../utils/osrmClient');
 const { solveTSP } = require('../utils/tsp');

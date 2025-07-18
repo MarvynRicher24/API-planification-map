@@ -1,3 +1,56 @@
+/**
+ * @swagger
+ * /api/calculate-route:
+ *   post:
+ *     summary: Route and itinerary calculation
+ *     tags:
+ *       - Itinéraire
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [baseAddress, followingAddresses, vehicle]
+ *             properties:
+ *               baseAddress:
+ *                 $ref: '#/components/schemas/Point'
+ *               followingAddresses:
+ *                 type: array
+ *                 items:
+ *                   $ref: '#/components/schemas/Point'
+ *               vehicle:
+ *                 type: string
+ *                 enum: [car, electricCar, utility, electricUtility, bike, byFoot]
+ *     responses:
+ *       200:
+ *         description: Itinerary optimisation
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 optimizedPoints:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Point'
+ *                 geometry:
+ *                   type: object
+ *                   description: Route Geojson
+ *                 totalDistance:
+ *                   type: string
+ *                   description: Distance (km)
+ *                 totalTime:
+ *                   type: integer
+ *                   description: Time (min)
+ *                 carbonFootprint:
+ *                   type: number
+ *                   description: Carbon Footprint (kg CO2)
+ *       400:
+ *         description: Bad request
+ *       500:
+ *         description: Internal error
+ */
 const express = require('express');
 const { getDistanceMatrix, getRouteGeoJSON } = require('../utils/osrmClient');
 const { solveTSP } = require('../utils/tsp');
