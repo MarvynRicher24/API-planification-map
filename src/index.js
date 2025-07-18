@@ -1,6 +1,5 @@
 require('dotenv').config();
 const express = require('express');
-const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const geocodeRouter = require('./routes/geocode');
@@ -11,9 +10,9 @@ const mapsRouter = require('./routes/exportGoogleMaps');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(bodyParser.json());
 app.use(cors());
 
+app.use('/api', express.json());
 app.use('/api/geocode-address', geocodeRouter);
 app.use('/api/calculate-route', calculateRouter);
 app.use('/api/export-gpx', gpxRouter);
