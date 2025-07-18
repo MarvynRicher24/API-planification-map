@@ -1,4 +1,3 @@
-// tests/calculateRoute.test.js
 const request = require('supertest');
 const express = require('express');
 const calculateRouter = require('../src/routes/calculateRoute');

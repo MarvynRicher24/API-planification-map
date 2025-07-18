@@ -8,6 +8,4 @@ services:
       - "5000:5000"
     env_file:
       - .env
-    # Override si besoin, ou précisez ici directement :
-    # environment:
       - ORS_API_KEY = '5b3ce3597851110001cf62482990c084e35f41e1b1cdafe113a39b59';

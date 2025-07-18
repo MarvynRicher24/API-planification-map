@@ -1,4 +1,3 @@
-// tests/exportGoogleMaps.test.js
 const request = require('supertest');
 const express = require('express');
 const mapsRouter = require('../src/routes/exportGoogleMaps');

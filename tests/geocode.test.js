@@ -1,7 +1,6 @@
-// tests/geocode.test.js
 const request = require('supertest');
 const express = require('express');
-const geocodeRouter = require('../src/routes/geocode'); // ton routeur
+const geocodeRouter = require('../src/routes/geocode');
 
 jest.mock('../src/utils/fetch');
 const fetch = require('../src/utils/fetch');

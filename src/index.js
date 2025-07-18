@@ -14,7 +14,6 @@ const PORT = process.env.PORT || 5000;
 app.use(bodyParser.json());
 app.use(cors());
 
-// Montée en charge des routes
 app.use('/api/geocode-address', geocodeRouter);
 app.use('/api/calculate-route', calculateRouter);
 app.use('/api/export-gpx', gpxRouter);

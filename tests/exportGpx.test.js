@@ -1,4 +1,3 @@
-// tests/exportGpx.test.js
 const request = require('supertest');
 const express = require('express');
 const gpxRouter = require('../src/routes/exportGpx');

@@ -1,4 +1,3 @@
-// tests/tsp.test.js
 const { solveTSP } = require('../src/utils/tsp');
 
 describe('solveTSP()', () => {
