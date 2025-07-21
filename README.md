@@ -1,145 +1,242 @@
-# Itinerary API Service
+# FastPlanEco API
 
-This project is a standalone **Node.js and Express** API for route optimization and planning, originally derived from a React-based map planning application. It provides powerful routing functionalities via HTTP endpoints, without any frontend UI.
+FastPlanEco API is a lightweight Express.js service for planning optimized routes with TSP (Traveling Salesman Problem), geocoding addresses, and exporting results in GPX or Google Maps URL formats. It also includes Swagger UI documentation.
 
-## Key Features
+---
 
-* **Optimized Route Calculation**: Solve the Traveling Salesman Problem (TSP) to compute the fastest itinerary through multiple waypoints.
-* **Accurate Distance & Time**: Fetch route distance and travel time using OSRM and OpenRouteService APIs, tailored to the chosen vehicle type.
-* **Environmental Impact**: Calculate CO₂ emissions based on distance and vehicle-specific emission factors (g CO₂/km).
-* **Google Maps Export**: Generate a shareable Google Maps Directions URL for the optimized route.
-* **GPX Export**: Produce a GPX file of the optimized route for use in GPS devices and mapping software.
+## Features
 
-## Table of Contents
+* **Address Geocoding**: Convert a free-text address into latitude and longitude using OpenStreetMap Nominatim.
+* **Route Optimization**: Solve the TSP for up to 8 waypoints using OSRM distance matrices and a brute-force algorithm.
+* **Route Calculation**: Retrieve optimized route geometry (GeoJSON) and compute distance and duration via OSRM and OpenRouteService.
+* **Carbon Footprint**: Estimate CO₂ emissions for different vehicle types (car, electric car, utility, bike, foot).
+* **Export to GPX**: Generate a GPX file of the optimized route for GPS devices.
+* **Export to Google Maps**: Produce a `https://www.google.com/maps/dir/?api=1` URL with waypoints for interactive visualization.
+* **Swagger UI**: Interactive API documentation at `/api-docs` (OpenAPI 3.0).
 
-* [Prerequisites](#prerequisites)
-* [Installation](#installation)
-* [Configuration](#configuration)
-* [Available Endpoints](#available-endpoints)
-* [Usage Examples](#usage-examples)
-* [Scripts](#scripts)
-* [Contributing](#contributing)
-* [License](#license)
+---
 
 ## Prerequisites
 
-* **Node.js** v14+
-* **npm** v6+
-* A valid **OpenRouteService (ORS) API key** (for precise travel time calculations)
-* Internet access for API calls to OSRM and OpenRouteService
+* Node.js v18+
+* Docker (optional, for containerized deployment)
+* OpenRouteService API key (`ORS_API_KEY`)
+
+---
 
 ## Installation
 
-1. Clone this repository:
+1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/itinerary-api.git
-   cd itinerary-api
+   git clone <repo-url>
+   cd fastplaneco-api
    ```
+
 2. Install dependencies:
 
    ```bash
    npm install
    ```
 
-## Configuration
-
-1. Create a `.env` file in the project root:
+3. Create a `.env` file at the project root:
 
    ```ini
+   ORS_API_KEY=your_openrouteservice_api_key
    PORT=5000
-   ORS_API_KEY=your_openrouteservice_api_key_here
    ```
-2. (Optional) Adjust the `PORT` as needed.
 
-## Available Endpoints
+4. Start the server:
 
-### 1. **Geocode Address**
+   ```bash
+   npm start
+   ```
+
+Your API is now running at `http://localhost:5000`.
+
+---
+
+## API Endpoints
+
+All endpoints accept and return JSON (except GPX export). Base path: `/api`.
+
+### 1. Geocode Address
 
 **POST** `/api/geocode-address`
 
-* **Body** (JSON):
+Request body:
 
-  ```json
-  { "query": "1600 Amphitheatre Parkway, Mountain View, CA" }
-  ```
-* **Response** (200):
+```json
+{ "query": "Eiffel Tower, Paris" }
+```
 
-  ```json
-  {
-    "address": "1600 Amphitheatre Parkway, ...",
-    "lat": 37.4220,
-    "lon": -122.0841
-  }
-  ```
+Success response (200):
 
-### 2. **Calculate Optimized Route**
+```json
+{
+  "address": "Eiffel Tower, Paris, France",
+  "lat": 48.8584,
+  "lon": 2.2945
+}
+```
+
+Errors:
+
+* `400 Bad Request` if `query` is missing
+* `404 Not Found` if address not found
+
+### 2. Calculate Route
 
 **POST** `/api/calculate-route`
 
-* **Body** (JSON):
+Request body:
 
-  ```json
-  {
-    "baseAddress": { "address": "Paris, France", "lat": 48.8566, "lon": 2.3522 },
-    "followingAddresses": [
-      { "address": "Lyon, France", "lat": 45.7640, "lon": 4.8357 },
-      { "address": "Toulouse, France", "lat": 43.6045, "lon": 1.4440 }
-    ],
-    "vehicle": "car"
-  }
-  ```
-* **Response** (200):
+```json
+{
+  "baseAddress": { "address": "A", "lat": 0, "lon": 0 },
+  "followingAddresses": [ { "address":"B","lat":0,"lon":1 } ],
+  "vehicle": "car"
+}
+```
 
-  ```json
-  {
-    "optimizedPoints": [ /* ordered list of addresses */ ],
-    "geometry": { /* GeoJSON LineString */ },
-    "totalDistance": "xxx.xx", // km
-    "totalTime": 123,          // minutes
-    "carbonFootprint": "yyy.yy" // grams CO₂
-  }
-  ```
+Success response (200):
 
-### 3. **Export to Google Maps**
+```json
+{
+  "optimizedPoints": [ ...array of points... ],
+  "geometry": { ...GeoJSON... },
+  "totalDistance": "X.XX",
+  "totalTime": minutes,
+  "carbonFootprint": number
+}
+```
 
-**POST** `/api/export-googlemaps`
+Errors:
 
-* **Same request body as `/calculate-route`**
-* **Response** (200):
+* `400 Bad Request` if parameters missing
+* `500 Internal Server Error` on failures
 
-  ```json
-  { "url": "https://www.google.com/maps/dir/?api=1&..." }
-  ```
-
-### 4. **Export GPX File**
+### 3. Export GPX
 
 **POST** `/api/export-gpx`
 
-* **Same request body as `/calculate-route`**
-* **Response** (200, `application/gpx+xml`): raw GPX XML content
+Request body: same as calculate-route.
 
-## Usage Examples
+Success response (200) with `Content-Type: application/gpx+xml` containing the GPX track.
 
-1. **Start the server**:
+### 4. Export Google Maps URL
+
+**POST** `/api/export-googlemaps`
+
+Request body: same as calculate-route.
+
+Success response (200):
+
+```json
+{ "url": "https://www.google.com/maps/dir/?api=1&origin=...&destination=...&waypoints=...&travelmode=..." }
+```
+
+---
+
+## Running Tests
+
+This project uses Jest and Supertest for unit and integration tests.
+
+### Locally
+
+```bash
+npm test
+```
+
+### In Docker
+
+1. Build the builder stage:
 
    ```bash
-   npm run start
-   # or for development with auto-reload:
-   npm run dev
+   docker build --target builder -t fastplaneco-api-builder .
    ```
-
-2. **Test with curl**:
+2. Run tests in a ephemeral container:
 
    ```bash
-   curl -X POST http://localhost:5000/api/calculate-route \
-     -H "Content-Type: application/json" \
-     -d '{ "baseAddress": { "address": "Paris, France", "lat": 48.8566, "lon": 2.3522 }, "followingAddresses": [{ "address": "Lyon, France", "lat": 45.7640, "lon": 4.8357 }], "vehicle": "car" }'
+   docker run --rm \
+     -e ORS_API_KEY=your_key \
+     fastplaneco-api-builder \
+     npm test
    ```
 
-## Scripts
+---
 
-| Command       | Description                           |
-| ------------- | ------------------------------------- |
-| `npm start`   | Run server in production mode         |
-| `npm run dev` | Run server with nodemon (auto-reload) |
+## Docker Deployment
+
+### Dockerfile (multistage)
+
+```dockerfile
+# Builder stage
+FROM node:18-alpine AS builder
+WORKDIR /usr/src/app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+
+# Runner stage
+FROM node:18-alpine AS runner
+WORKDIR /usr/src/app
+COPY --from=builder /usr/src/app/package.json ./
+COPY --from=builder /usr/src/app/package-lock.json ./
+COPY --from=builder /usr/src/app/src ./src
+COPY --from=builder /usr/src/app/src/utils ./src/utils
+COPY --from=builder /usr/src/app/src/routes ./src/routes
+RUN npm ci --only=production
+EXPOSE 5000
+CMD ["node","src/index.js"]
+```
+
+### Build and Run
+
+```bash
+# Build image
+docker build -t fastplaneco-api .
+
+# Run container
+docker run -d \
+  --name fastplaneco-api \
+  -p 5000:5000 \
+  -e ORS_API_KEY=your_key \
+  fastplaneco-api
+```
+
+Check status:
+
+```bash
+docker ps
+docker logs -f fastplaneco-api
+```
+
+To stop and remove:
+
+```bash
+docker stop fastplaneco-api
+docker rm fastplaneco-api
+```
+
+---
+
+## Swagger Documentation
+
+Swagger UI is available at `http://localhost:5000/api-docs`.
+
+* Interactive interface to test each endpoint
+* View request/response schemas
+* Explore the `Point` schema under **Components**
+
+---
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/XYZ`)
+3. Commit your changes (`git commit -m "Add XYZ"`)
+4. Push to the branch (`git push origin feature/XYZ`)
+5. Open a Pull Request
+
+Please ensure all tests pass and update documentation if needed.
