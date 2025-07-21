@@ -13,13 +13,13 @@ describe('POST /api/geocode-address', () => {
         app.use('/api/geocode-address', geocodeRouter);
     });
 
-    it('retourne 400 si pas de query', async () => {
+    it('returns 400 if no query', async () => {
         const res = await request(app).post('/api/geocode-address').send({});
         expect(res.status).toBe(400);
         expect(res.body.error).toMatch(/Missing address query/);
     });
 
-    it('retourne un résultat valide si Nominatim renvoie un item', async () => {
+    it('returns a valid result if Nominatim returns an item', async () => {
         fetch.mockResolvedValue({
             ok: true,
             json: async () => [{
@@ -41,7 +41,7 @@ describe('POST /api/geocode-address', () => {
         });
     });
 
-    it('retourne 404 si Nominatim ne trouve rien', async () => {
+    it('returns 404 if Nominatim finds nothing', async () => {
         fetch.mockResolvedValue({
             ok: true,
             json: async () => []
@@ -49,7 +49,7 @@ describe('POST /api/geocode-address', () => {
 
         const res = await request(app)
             .post('/api/geocode-address')
-            .send({ query: 'Inconnu' });
+            .send({ query: 'Unknown' });
 
         expect(res.status).toBe(404);
         expect(res.body.error).toMatch(/Address not found/);

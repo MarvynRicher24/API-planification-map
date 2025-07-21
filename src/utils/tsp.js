@@ -1,4 +1,3 @@
-// Brute-force TSP (uniquement pour < 8 points)
 function permutations(arr) {
     if (!arr.length) return [[]];
     return arr.flatMap((x, i) =>

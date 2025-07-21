@@ -21,7 +21,7 @@ const options = {
         info: {
             title: 'FastPlanEco API',
             version: '1.0.0',
-            description: 'Fastplaneco API, itinerary optimisation API'
+            description: 'Fastplaneco API, optimisation and itinerary API'
         },
         servers: [
             { url: 'http://localhost:5000', description: 'Local Server' }

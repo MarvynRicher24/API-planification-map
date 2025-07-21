@@ -16,7 +16,7 @@ describe('POST /api/export-gpx', () => {
         app.use('/api/export-gpx', gpxRouter);
     });
 
-    it('génère un GPX valide', async () => {
+    it('generates a valid GPX', async () => {
         fetch.mockResolvedValue({
             ok: true,
             json: async () => ({

@@ -1,7 +1,7 @@
 const { solveTSP } = require('../src/utils/tsp');
 
 describe('solveTSP()', () => {
-    it('trouve l’ordre minimal sur 3 points', () => {
+    it('find the minimum order on 3 points', () => {
         const dist = [
             [0, 5, 10],
             [5, 0, 3],
@@ -12,7 +12,7 @@ describe('solveTSP()', () => {
         expect(order).toEqual([1, 2]);
     });
 
-    it('gère un seul point à visiter', () => {
+    it('manages a single point to visit', () => {
         const dist = [
             [0, 7],
             [7, 0]

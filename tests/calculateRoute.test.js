@@ -17,12 +17,12 @@ describe('POST /api/calculate-route', () => {
         app.use('/api/calculate-route', calculateRouter);
     });
 
-    it('retourne 400 si paramètres manquants', async () => {
+    it('returns 400 if parameters missing', async () => {
         const res = await request(app).post('/api/calculate-route').send({});
         expect(res.status).toBe(400);
     });
 
-    it('optimise et retourne distance, temps et empreinte', async () => {
+    it('optimizes and returns distance, time and footprint', async () => {
         // 1) OSRM table
         fetch
             .mockResolvedValueOnce({

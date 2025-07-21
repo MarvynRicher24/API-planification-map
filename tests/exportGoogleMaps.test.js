@@ -16,7 +16,7 @@ describe('POST /api/export-googlemaps', () => {
         app.use('/api/export-googlemaps', mapsRouter);
     });
 
-    it('retourne une URL Google Maps bien formée', async () => {
+    it('returns a well-formed Google Maps URL', async () => {
         fetch.mockResolvedValue({
             ok: true,
             json: async () => ({
