@@ -56,7 +56,7 @@ const { getDistanceMatrix, getRouteGeoJSON } = require('../utils/osrmClient');
 const { solveTSP } = require('../utils/tsp');
 const { getDuration } = require('../utils/orsClient');
 
-const emission = { car: 218, electricCar: 103, utility: 218, electricUtility: 103, bike: 6, byFoot: 0 };
+const emission = { car: 251, electricCar: 100, utility: 251, electricUtility: 100, bike: 15, byFoot: 0 }; // sources : greenly.earth ; sami.eco ; 
 const speedFallback = { car: 60, electricCar: 60, utility: 60, electricUtility: 60, bike: 15, byFoot: 5 };
 const profileMap = { car: 'driving-car', electricCar: 'driving-car', utility: 'driving-car', electricUtility: 'driving-car', bike: 'cycling-regular', byFoot: 'foot-walking' };
 
