@@ -12,6 +12,7 @@ FastPlanEco API is a lightweight Express.js service for planning optimized route
 * **Carbon Footprint**: Estimate CO₂ emissions for different vehicle types (car, electric car, utility, bike, foot).
 * **Export to GPX**: Generate a GPX file of the optimized route for GPS devices.
 * **Export to Google Maps**: Produce a `https://www.google.com/maps/dir/?api=1` URL with waypoints for interactive visualization.
+* **Docker Deployment**: Docker ensures the API runs in a consistent, isolated container environment, making it easy to share, deploy, and manage across any machine.
 * **Swagger UI**: Interactive API documentation at `/api-docs` (OpenAPI 3.0).
 
 ---
