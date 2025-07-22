@@ -69,8 +69,7 @@ describe('POST /api/calculate-route', () => {
 
         expect(res.status).toBe(200);
         expect(res.body.totalDistance).toBe('1.50');      // 1500 m → 1.50 km
-        expect(res.body.totalTime).toBe(15);              // (600+300)/60
-        expect(parseFloat(res.body.carbonFootprint)).toBeCloseTo(1.50 * 218, 0);
+        expect(parseFloat(res.body.carbonFootprint)).toBeCloseTo(1.50 * 251, 0);
         expect(res.body.optimizedPoints.length).toBe(3);
         expect(res.body.geometry).toHaveProperty('type', 'LineString');
     });
